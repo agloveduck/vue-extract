@@ -4,6 +4,8 @@
       <h2 class="search_left">实体关系抽取系统</h2>
       <div class="links">
         <el-link icon="el-icon-arrow-left" @click="$router.push('/')">← 返回首页</el-link>
+        <el-button type="primary" @click="uploadFile">上传TXT文件</el-button>
+        <input type="file" ref="fileInput" @change="handleFileUpload" accept=".txt" style="display: none;" />
       </div>
     </div>
     <el-form :model="form" @submit.prevent="submitForm">
@@ -19,6 +21,10 @@
         <el-button type="primary" @click="submitForm">提取关系实体三元组</el-button>
       </el-form-item>
     </el-form>
+    <div v-if="fileContent" class="file-content">
+        <h3>文件内容:</h3>
+        <pre>{{ fileContent }}</pre>
+      </div>
     <div v-if="triples.length">
       <el-table :data="triples" style="width: 100%">
         <el-table-column prop="0" label="头实体"></el-table-column>
@@ -40,10 +46,26 @@ export default {
   data() {
     return {
       text: '',
-      triples: []
+      triples: [],
+      fileContent: ''
     }
   },
   methods: {
+    uploadFile() {
+      this.$refs.fileInput.click();
+    },
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file && file.type === 'text/plain') {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.fileContent = e.target.result;
+        };
+        reader.readAsText(file);
+      } else {
+        alert('请选择一个TXT文件');
+      }
+    },
     submitForm() {
       console.log(this.text);
       var formData = new FormData()

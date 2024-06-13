@@ -3,7 +3,9 @@
     <div class="top-bar">
       <h2 class="search_left">实体抽取系统</h2>
       <div class="links">
-        <el-link icon="el-icon-arrow-left" @click="$router.push('/')">← 返回首页</el-link>
+        <el-link icon="el-icon-arrow-left" @click="$router.push('/')" class="home-link">← 返回首页</el-link>
+        <el-button type="primary" @click="uploadFile" class="upload-button">上传TXT文件</el-button>
+        <input type="file" ref="fileInput" @change="handleFileUpload" accept=".txt" style="display: none;" />
       </div>
     </div>
     <el-form :model="form" @submit.prevent="submitForm">
@@ -19,6 +21,10 @@
         <el-button type="primary" @click="submitForm">提取实体</el-button>
       </el-form-item>
     </el-form>
+    <div v-if="fileContent" class="file-content">
+        <h3>文件内容:</h3>
+        <pre>{{ fileContent }}</pre>
+      </div>
     <div v-if="entities.length">
       <el-table :data="entities" style="width: 100%">
         <el-table-column prop="1" label="实体"></el-table-column>
@@ -39,10 +45,26 @@ export default {
   data() {
     return {
       text: '',
-      entities: []
+      entities: [],
+      fileContent: ''
     }
   },
   methods: {
+    uploadFile() {
+      this.$refs.fileInput.click();
+    },
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file && file.type === 'text/plain') {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.fileContent = e.target.result;
+        };
+        reader.readAsText(file);
+      } else {
+        alert('请选择一个TXT文件');
+      }
+    },
     submitForm() {
       console.log(this.text);
       var formData = new FormData()
@@ -81,6 +103,13 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.home-link {
+  margin-right: 20px; /* 设置返回首页链接与上传按钮之间的间距 */
+}
+
+.upload-button {
+  margin-left: 20px; /* 设置上传按钮与前一个元素的间距 */
 }
 
 /* 为每种实体类型定义不同的背景颜色 */

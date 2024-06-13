@@ -3,8 +3,8 @@
     <div class="top-bar">
       <h2 class="search_left">首页</h2>
       <div class="links">
-        <el-link icon="el-icon-message" href="/entity_extraction" >实体抽取系统</el-link>
-        <el-link icon="el-icon-position" href="/relation_extraction">关系抽取系统</el-link>
+        <el-link href="/entity_extraction">实体抽取系统</el-link>
+        <el-link href="/relation_extraction" class="relation-link">关系抽取系统</el-link>
       </div>
     </div>
     <div class="content">
@@ -17,7 +17,7 @@
 <script>
 export default {
   name: 'HomeComponent'
-}
+};
 </script>
 
 <style scoped>
@@ -46,6 +46,10 @@ export default {
   /*实现水平居中*/
   justify-content: center;
 }
+.relation-link {
+  margin-left: 20px; /* 设置两个链接之间的间距 */
+}
+
 
 .home-image {
   max-width: 60%;
