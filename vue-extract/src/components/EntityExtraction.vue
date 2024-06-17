@@ -82,7 +82,11 @@ export default {
         alert('请先选择文件');
       }
     },
-    submitForm() {
+   submitForm() {
+    if (this.text.trim() === '') {
+        this.$message.error('请输入文本');
+        return;
+      }
       console.log(this.text);
       var formData = new FormData()
       formData.append('text', this.text)
@@ -90,6 +94,24 @@ export default {
         console.log(res.data)
         this.entities = res.data.entities;
         this.$message.success('实体提取成功');
+
+        // 构建文本文件内容
+        let fileContent = '实体 类型\n';
+        this.entities.forEach(entity => {
+          fileContent += `${entity[1]}\t${entity[0]}\n`;
+        });
+
+        // 创建 Blob 对象并生成下载链接
+        const blob = new Blob([fileContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'entities.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
       }).catch(error => {
         console.log(error);
         this.$message.error('实体提取失败');
