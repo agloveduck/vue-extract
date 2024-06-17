@@ -4,8 +4,7 @@
       <h2 class="search_left">实体抽取系统</h2>
       <div class="links">
         <el-link icon="el-icon-arrow-left" @click="$router.push('/')" class="home-link">← 返回首页</el-link>
-        <el-button type="primary" @click="uploadFile" class="upload-button">上传TXT文件</el-button>
-        <input type="file" ref="fileInput" @change="handleFileUpload" accept=".txt" style="display: none;" />
+        <el-button type="primary" @click="centerDialogVisible = true" class="upload-button">上传TXT文件</el-button>
       </div>
     </div>
     <el-form :model="form" @submit.prevent="submitForm">
@@ -21,10 +20,7 @@
         <el-button type="primary" @click="submitForm">提取实体</el-button>
       </el-form-item>
     </el-form>
-    <div v-if="fileContent" class="file-content">
-        <h3>文件内容:</h3>
-        <pre>{{ fileContent }}</pre>
-      </div>
+
     <div v-if="entities.length">
       <el-table :data="entities" style="width: 100%">
         <el-table-column prop="1" label="实体"></el-table-column>
@@ -35,6 +31,16 @@
         </el-table-column>
       </el-table>
     </div>
+    <el-dialog v-model="centerDialogVisible" title="上传TXT文件" width="500" center>
+      <span>请选择一个TXT文件进行上传</span>
+      <input type="file" ref="fileInput" @change="handleFileUpload" accept=".txt" />
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="centerDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="confirmUpload">确定</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -46,23 +52,34 @@ export default {
     return {
       text: '',
       entities: [],
-      fileContent: ''
+      fileContent: '',
+      centerDialogVisible:false
+
     }
   },
   methods: {
     uploadFile() {
-      this.$refs.fileInput.click();
+      console.log('ceshi');
     },
     handleFileUpload(event) {
       const file = event.target.files[0];
-      if (file && file.type === 'text/plain') {
+       if (file && file.type === 'text/plain') {
         const reader = new FileReader();
         reader.onload = (e) => {
-          this.fileContent = e.target.result;
+          this.fileContent= e.target.result;
+          this.text = this.fileContent; // 将文件内容填充到输入框中
         };
         reader.readAsText(file);
       } else {
         alert('请选择一个TXT文件');
+      }
+    },
+    confirmUpload() {
+      if (this.fileContent!== '') {
+        this.centerDialogVisible= false;
+        alert('文件上传成功');
+      } else {
+        alert('请先选择文件');
       }
     },
     submitForm() {
